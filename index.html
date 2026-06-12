@@ -4,29 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRADE_PRO - Muvaffaqiyatli Treyding Sari!</title>
+    <!-- Font Awesome ikonkalari uchun -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Rang o'zgaruvchilari (Tungi rejim asosiylari) */
+        :root {
+            --bg-gradient: radial-gradient(circle at center, #0f233c 0%, #020914 100%);
+            --text-color: #ffffff;
+            --card-bg: rgba(10, 20, 35, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --btn-bg: rgba(18, 32, 54, 0.85);
+            --btn-border: rgba(255, 255, 255, 0.05);
+            --btn-hover: rgba(26, 47, 79, 0.95);
+            --watermark-color: rgba(255, 255, 255, 0.08);
+            --watermark-shadow: 0 0 20px rgba(0, 242, 254, 0.25), 0 0 40px rgba(212, 175, 55, 0.12);
+            --shior-color: #a0aec0;
+            --divider-color: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Kungi rejim ranglari */
+        [data-theme="light"] {
+            --bg-gradient: radial-gradient(circle at center, #f4f7fa 0%, #e2e8f0 100%);
+            --text-color: #1a202c;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --btn-bg: rgba(255, 255, 255, 0.9);
+            --btn-border: rgba(0, 0, 0, 0.06);
+            --btn-hover: #edf2f7;
+            --watermark-color: rgba(15, 35, 60, 0.06);
+            --watermark-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            --shior-color: #4a5568;
+            --divider-color: rgba(0, 0, 0, 0.08);
+        }
+
         /* Umumiy stillar */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
         }
 
         body {
-            background: radial-gradient(circle at center, #0f233c 0%, #020914 100%);
-            color: #ffffff;
+            background: var(--bg-gradient);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            overflow: hidden; /* Yulduzlar ekrandan chiqib ketganda skroll chiqmasligi uchun */
+            overflow: hidden;
             position: relative;
         }
 
-        /* Uchayotgan Yulduzlar uchun Canvas */
+        /* Rejim o'zgartirgich tugma (Theme Switcher) */
+        .theme-toggle-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Uchayotgan Yulduzlar Canvas */
         #starsCanvas {
             position: absolute;
             top: 0;
@@ -37,19 +94,70 @@
             pointer-events: none;
         }
 
-        /* Konteyner (Shisha effekti - Glassmorphism) */
+        /* Orqa fondagi 12 ta brend yozuvlari */
+        .bg-matnlar-konteyner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 60px;
+            padding: 60px;
+            user-select: none;
+        }
+
+        .bg-brend-matn {
+            font-size: 3.5vw;
+            font-weight: 900;
+            color: var(--watermark-color);
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            white-space: nowrap;
+            transform: rotate(-20deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: var(--watermark-shadow);
+        }
+
+        /* Telefonlar uchun yozuvlar joylashuvi */
+        @media (max-width: 768px) {
+            .theme-toggle-btn {
+                top: 15px;
+                right: 15px;
+                width: 42px;
+                height: 42px;
+                font-size: 16px;
+            }
+            .bg-matnlar-konteyner {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+                gap: 40px;
+                padding: 30px;
+            }
+            .bg-brend-matn {
+                font-size: 7vw;
+            }
+        }
+
+        /* Konteyner (Glassmorphism) */
         .ekran-markazi {
             width: 100%;
             max-width: 440px;
             text-align: center;
             position: relative;
-            z-index: 2;
+            z-index: 3;
             padding: 30px 20px;
-            background: rgba(10, 20, 35, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 16px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
         }
 
         /* Profil qismi */
@@ -64,7 +172,7 @@
             margin: 0 auto 15px;
             border: 2px solid #d4af37;
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-            background: #06101e;
+            background: var(--btn-bg);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -85,7 +193,6 @@
             font-weight: 700;
             letter-spacing: 2px;
             margin-bottom: 8px;
-            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -99,7 +206,7 @@
 
         .shior {
             font-size: 15px;
-            color: #a0aec0;
+            color: var(--shior-color);
             font-style: italic;
             font-weight: 300;
         }
@@ -118,11 +225,12 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            background: linear-gradient(90deg, transparent, var(--divider-color), transparent);
         }
 
         .strelka-ajratuvchi i {
-            color: rgba(255, 255, 255, 0.2);
+            color: var(--shior-color);
+            opacity: 0.4;
             font-size: 12px;
             margin: 0 15px;
         }
@@ -132,22 +240,21 @@
             display: flex;
             align-items: center;
             width: 100%;
-            background: rgba(18, 32, 54, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
             border-radius: 10px;
             padding: 18px 25px;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .havola-tugmasi:hover {
             transform: translateY(-3px);
-            background: rgba(26, 47, 79, 0.9);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            background: var(--btn-hover);
+            border-color: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
-        /* Telegram VIP oltin effekt */
+        /* Telegram VIP */
         .havola-tugmasi.VIP {
             border: 1px solid rgba(212, 175, 55, 0.3);
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.05);
@@ -187,11 +294,17 @@
         .matn-facebook { color: #4f8aff; }
         .matn-admin { color: #f39c12; }
 
+        /* Kungi rejimda tugma matnlari bir oz kontrastliroq ko'rinishi uchun */
+        [data-theme="light"] .matn-telegram { color: #0066cc; }
+        [data-theme="light"] .matn-instagram { color: #d62976; }
+        [data-theme="light"] .matn-facebook { color: #0044cc; }
+
         /* Footer */
         .pastki-qism {
             margin-top: 35px;
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.25);
+            color: var(--shior-color);
+            opacity: 0.6;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -199,7 +312,7 @@
         }
 
         .pastki-qism a {
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--text-color);
             text-decoration: none;
             font-weight: bold;
         }
@@ -207,10 +320,25 @@
 </head>
 <body>
 
+    <!-- Tungi/Kungi rejim almashtiruvchi tugma -->
+    <button class="theme-toggle-btn" id="themeToggle" title="Rejimni o'zgartirish">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Jonli Fon (Faqat tungi rejimda chiroyli ko'rinadi) -->
     <canvas id="starsCanvas"></canvas>
+
+    <!-- Orqa fonda 12 ta "Suxrob FX" yozuvlari matritsasi -->
+    <div class="bg-matnlar-konteyner">
+        <div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div>
+        <div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div>
+        <div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div>
+        <div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div><div class="bg-brend-matn">Suxrob FX</div>
+    </div>
 
     <div class="ekran-markazi">
         
+        <!-- Profil qismi -->
         <div class="profil-qismi">
             <div class="logo-aylana">
                 <i class="fa-solid fa-chart-line"></i>
@@ -219,6 +347,7 @@
             <p class="shior">Muvaffaqiyatli Treyding Sari!</p>
         </div>
 
+        <!-- TELEGRAM TUGMASI -->
         <a href="https://t.me/SizningLink" class="havola-tugmasi VIP" target="_blank">
             <div class="ikonka-qismi">
                 <i class="fa-brands fa-telegram"></i>
@@ -230,6 +359,7 @@
             <i class="fa-solid fa-chevron-down"></i>
         </div>
 
+        <!-- INSTAGRAM TUGMASI -->
         <a href="https://instagram.com/SizningLink" class="havola-tugmasi" target="_blank">
             <div class="ikonka-qismi">
                 <i class="fa-brands fa-instagram"></i>
@@ -241,6 +371,7 @@
             <i class="fa-solid fa-chevron-down"></i>
         </div>
 
+        <!-- FACEBOOK TUGMASI -->
         <a href="https://facebook.com/SizningLink" class="havola-tugmasi" target="_blank">
             <div class="ikonka-qismi">
                 <i class="fa-brands fa-facebook"></i>
@@ -252,20 +383,47 @@
             <i class="fa-solid fa-chevron-down"></i>
         </div>
 
+        <!-- ADMIN TUGMASI -->
         <a href="https://t.me/SizningAdminLink" class="havola-tugmasi" target="_blank">
             <div class="ikonka-qismi">
                 <i class="fa-solid fa-user-shield"></i>
             </div>
             <div class="matn-qismi matn-admin">Admin</div>
         </a>
+
+        <!-- Footer -->
+        <div class="pastki-qism">
+            <span>Сделано на</span>
+            <i class="fa-solid fa-bars-staggered" style="font-size: 10px;"></i>
+            <a href="#">Taplink.ru</a>
+        </div>
+
     </div>
 
+    <!-- JavaScript: Rejimni o'zgartirish va Yulduzlar effektlari -->
     <script>
+        // 1. Tungi va Kungi Rejim Logikasi
+        const themeToggle = document.getElementById('themeToggle');
+        const icon = themeToggle.querySelector('i');
+        let isLightMode = false;
+
+        themeToggle.addEventListener('click', () => {
+            isLightMode = !isLightMode;
+            if (isLightMode) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                icon.className = 'fa-solid fa-sun'; // Quyosh ikonkasiga o'zgaradi
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                icon.className = 'fa-solid fa-moon'; // Oy ikonkasiga o'zgaradi
+            }
+        });
+
+        // 2. Uchayotgan Kosmik Yulduzlar Effekti
         const canvas = document.getElementById('starsCanvas');
         const ctx = canvas.getContext('2d');
 
         let stars = [];
-        const starCount = 60; // Uchayotgan yulduzlar soni
+        const starCount = 60;
 
         function resize() {
             canvas.width = window.innerWidth;
@@ -277,35 +435,31 @@
         class ShootingStar {
             constructor() {
                 this.reset();
-                // Dastlab yulduzlar ekranning har xil joyida bo'lishi uchun
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
             }
 
             reset() {
-                // Yulduzlar asosan chap-pastga yoki diagonal uchishi uchun boshlang'ich nuqta
                 this.x = Math.random() * canvas.width;
                 this.y = -20; 
-                this.length = Math.random() * 80 + 40; // Yulduz dumi uzunligi
-                this.speedX = (Math.random() * 2 + 1) * -1; // Chapga og'ish tezligi
-                this.speedY = Math.random() * 3 + 2;        // Pastga tushish tezligi
-                this.thickness = Math.random() * 1.5 + 0.5; // Qalinligi
+                this.length = Math.random() * 80 + 40; 
+                this.speedX = (Math.random() * 2 + 1) * -1; 
+                this.speedY = Math.random() * 3 + 2;        
+                this.thickness = Math.random() * 1.5 + 0.5; 
                 
-                // Oltin va neon tusdagi ranglar
                 const colors = [
-                    'rgba(212, 175, 55, ',  /* Oltin */
-                    'rgba(255, 224, 102, ', /* Och sariq */
-                    'rgba(0, 242, 254, '    /* Neon ko'k (Trading chizig'i uchun) */
+                    'rgba(212, 175, 55, ',  
+                    'rgba(255, 224, 102, ', 
+                    'rgba(0, 242, 254, '    
                 ];
                 this.colorBase = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.4 + 0.2; // Shaffoflik
+                this.alpha = Math.random() * 0.4 + 0.2; 
             }
 
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
 
-                // Agar ekrandan chiqib ketsa, tepadan yangitdan tushadi
                 if (this.y > canvas.height + 50 || this.x < -50) {
                     this.reset();
                 }
@@ -313,7 +467,6 @@
 
             draw() {
                 ctx.beginPath();
-                // Gradient quyruq hosil qilish
                 let gradient = ctx.createLinearGradient(
                     this.x, this.y, 
                     this.x - this.speedX * (this.length / 10), 
@@ -321,13 +474,12 @@
                 );
                 
                 gradient.addColorStop(0, `${this.colorBase}${this.alpha})`);
-                gradient.addColorStop(1, `${this.colorBase}0)`); // Quyruq qismi yo'qolib boradi
+                gradient.addColorStop(1, `${this.colorBase}0)`); 
 
                 ctx.strokeStyle = gradient;
                 ctx.lineWidth = this.thickness;
                 ctx.lineCap = 'round';
                 
-                // Yulduz chizig'ini chizish
                 ctx.moveTo(this.x, this.y);
                 ctx.lineTo(
                     this.x - this.speedX * (this.length / 10), 
@@ -345,15 +497,17 @@
         }
 
         function animate() {
-            // "O'tib ketayotgan dum" effekti (Motion blur) yaratish uchun tozalashni biroz shaffof qilamiz
-            ctx.fillStyle = 'rgba(2, 9, 20, 0.3)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
-
+            // Agar kungi rejimda bo'lsa canvasni tozalab turadi (yulduzlar ochiq fonda ko'rinmaydi)
+            if (isLightMode) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = 'rgba(2, 9, 20, 0.3)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                stars.forEach(star => {
+                    star.update();
+                    star.draw();
+                });
+            }
             requestAnimationFrame(animate);
         }
 
