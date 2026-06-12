@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADE_PRO - Muvaffaqiyatli Treyding Sari!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Umumiy stillar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #0f233c 0%, #020914 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden; /* Yulduzlar ekrandan chiqib ketganda skroll chiqmasligi uchun */
+            position: relative;
+        }
+
+        /* Uchayotgan Yulduzlar uchun Canvas */
+        #starsCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Konteyner (Shisha effekti - Glassmorphism) */
+        .ekran-markazi {
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            padding: 30px 20px;
+            background: rgba(10, 20, 35, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Profil qismi */
+        .profil-qismi {
+            margin-bottom: 30px;
+        }
+
+        .logo-aylana {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+            background: #06101e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-aylana i {
+            font-size: 40px;
+            color: #d4af37;
+            background: linear-gradient(135deg, #ffe066, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .asosiy-ism {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .asosiy-ism span {
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+
+        .shior {
+            font-size: 15px;
+            color: #a0aec0;
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        /* Ajratuvchi chiziq */
+        .strelka-ajratuvchi {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 12px 0;
+            position: relative;
+        }
+
+        .strelka-ajratuvchi::before,
+        .strelka-ajratuvchi::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+        }
+
+        .strelka-ajratuvchi i {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+            margin: 0 15px;
+        }
+
+        /* Tugmalar */
+        .havola-tugmasi {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            background: rgba(18, 32, 54, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 18px 25px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .havola-tugmasi:hover {
+            transform: translateY(-3px);
+            background: rgba(26, 47, 79, 0.9);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        /* Telegram VIP oltin effekt */
+        .havola-tugmasi.VIP {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.05);
+        }
+        
+        .havola-tugmasi.VIP:hover {
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
+        }
+
+        .ikonka-qismi {
+            font-size: 24px;
+            width: 35px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .matn-qismi {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding-right: 35px;
+        }
+
+        /* Ranglar */
+        .fa-telegram { color: #229ED9; }
+        .fa-instagram { color: #E1306C; }
+        .fa-facebook { color: #1877F2; }
+        .fa-user-shield { color: #f1c40f; }
+
+        .matn-telegram { color: #4fa0ff; }
+        .matn-instagram { color: #e45fa0; }
+        .matn-facebook { color: #4f8aff; }
+        .matn-admin { color: #f39c12; }
+
+        /* Footer */
+        .pastki-qism {
+            margin-top: 35px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pastki-qism a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starsCanvas"></canvas>
+
+    <div class="ekran-markazi">
+        
+        <div class="profil-qismi">
+            <div class="logo-aylana">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h1 class="asosiy-ism">TRADE_PRO<span>✦</span></h1>
+            <p class="shior">Muvaffaqiyatli Treyding Sari!</p>
+        </div>
+
+        <a href="https://t.me/SizningLink" class="havola-tugmasi VIP" target="_blank">
+            <div class="ikonka-qismi">
+                <i class="fa-brands fa-telegram"></i>
+            </div>
+            <div class="matn-qismi matn-telegram">Telegram</div>
+        </a>
+
+        <div class="strelka-ajratuvchi">
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <a href="https://instagram.com/SizningLink" class="havola-tugmasi" target="_blank">
+            <div class="ikonka-qismi">
+                <i class="fa-brands fa-instagram"></i>
+            </div>
+            <div class="matn-qismi matn-instagram">Instagram</div>
+        </a>
+
+        <div class="strelka-ajratuvchi">
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <a href="https://facebook.com/SizningLink" class="havola-tugmasi" target="_blank">
+            <div class="ikonka-qismi">
+                <i class="fa-brands fa-facebook"></i>
+            </div>
+            <div class="matn-qismi matn-facebook">Facebook</div>
+        </a>
+
+        <div class="strelka-ajratuvchi">
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <a href="https://t.me/SizningAdminLink" class="havola-tugmasi" target="_blank">
+            <div class="ikonka-qismi">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="matn-qismi matn-admin">Admin</div>
+        </a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('starsCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let stars = [];
+        const starCount = 60; // Uchayotgan yulduzlar soni
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class ShootingStar {
+            constructor() {
+                this.reset();
+                // Dastlab yulduzlar ekranning har xil joyida bo'lishi uchun
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+            }
+
+            reset() {
+                // Yulduzlar asosan chap-pastga yoki diagonal uchishi uchun boshlang'ich nuqta
+                this.x = Math.random() * canvas.width;
+                this.y = -20; 
+                this.length = Math.random() * 80 + 40; // Yulduz dumi uzunligi
+                this.speedX = (Math.random() * 2 + 1) * -1; // Chapga og'ish tezligi
+                this.speedY = Math.random() * 3 + 2;        // Pastga tushish tezligi
+                this.thickness = Math.random() * 1.5 + 0.5; // Qalinligi
+                
+                // Oltin va neon tusdagi ranglar
+                const colors = [
+                    'rgba(212, 175, 55, ',  /* Oltin */
+                    'rgba(255, 224, 102, ', /* Och sariq */
+                    'rgba(0, 242, 254, '    /* Neon ko'k (Trading chizig'i uchun) */
+                ];
+                this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+                this.alpha = Math.random() * 0.4 + 0.2; // Shaffoflik
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Agar ekrandan chiqib ketsa, tepadan yangitdan tushadi
+                if (this.y > canvas.height + 50 || this.x < -50) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                // Gradient quyruq hosil qilish
+                let gradient = ctx.createLinearGradient(
+                    this.x, this.y, 
+                    this.x - this.speedX * (this.length / 10), 
+                    this.y - this.speedY * (this.length / 10)
+                );
+                
+                gradient.addColorStop(0, `${this.colorBase}${this.alpha})`);
+                gradient.addColorStop(1, `${this.colorBase}0)`); // Quyruq qismi yo'qolib boradi
+
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = this.thickness;
+                ctx.lineCap = 'round';
+                
+                // Yulduz chizig'ini chizish
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(
+                    this.x - this.speedX * (this.length / 10), 
+                    this.y - this.speedY * (this.length / 10)
+                );
+                
+                ctx.stroke();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < starCount; i++) {
+                stars.push(new ShootingStar());
+            }
+        }
+
+        function animate() {
+            // "O'tib ketayotgan dum" effekti (Motion blur) yaratish uchun tozalashni biroz shaffof qilamiz
+            ctx.fillStyle = 'rgba(2, 9, 20, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
